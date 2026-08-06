@@ -293,7 +293,9 @@ export function createApp(config?: Config) {
   if (cfg.serveStaticAssets) {
     const clientDist = cfg.clientDist
       ? path.resolve(cfg.clientDist)
-      : path.resolve(__dirname, '../../client/dist');
+      : process.env.VERCEL
+        ? path.resolve(process.cwd(), 'client/dist')
+        : path.resolve(__dirname, '../../client/dist');
     // Gzip the dashboard bundle (1+ MB uncompressed). Mounted HERE — after
     // every API/proxy router and the error handler — so it only wraps the
     // static-file / SPA-fallback responses below it. The /v1 and /api handlers
