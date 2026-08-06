@@ -128,7 +128,7 @@ export function createApp(config?: Config) {
         styleSrc: ["'self'", "'unsafe-inline'"],
         imgSrc: ["'self'", "data:"],
         connectSrc: ["'self'"],
-        fontSrc: ["'self'"],
+        fontSrc: ["'self'", "data:"],
         formAction: ["'self'"],
         baseUri: ["'self'"],
         upgradeInsecureRequests: null,
