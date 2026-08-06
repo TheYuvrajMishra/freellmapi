@@ -332,3 +332,12 @@ export function createApp(config?: Config) {
 
   return app;
 }
+
+let vercelApp: ReturnType<typeof createApp> | undefined;
+export default function handler(req: any, res: any) {
+  if (!vercelApp) {
+    vercelApp = createApp();
+  }
+  return vercelApp(req, res);
+}
+
