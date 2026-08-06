@@ -3,6 +3,7 @@ import compression from 'compression';
 import cors from 'cors';
 import helmet from 'helmet';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { keysRouter } from './routes/keys.js';
 import { clientProfilesRouter } from './routes/client-profiles.js';
@@ -291,11 +292,15 @@ export function createApp(config?: Config) {
   // Set serveStaticAssets: false in Config to skip static serving entirely
   // (e.g. in runtimes that serve assets through a different mechanism).
   if (cfg.serveStaticAssets) {
-    const clientDist = cfg.clientDist
-      ? path.resolve(cfg.clientDist)
-      : process.env.VERCEL
-        ? path.resolve(process.cwd(), 'client/dist')
-        : path.resolve(__dirname, '../../client/dist');
+    const candidatePaths = [
+      cfg.clientDist ? path.resolve(cfg.clientDist) : null,
+      path.resolve(process.cwd(), 'client/dist'),
+      path.resolve(process.cwd(), '../client/dist'),
+      path.resolve(__dirname, '../../client/dist'),
+      path.resolve(__dirname, '../../../client/dist'),
+    ].filter((p): p is string => Boolean(p));
+
+    const clientDist = candidatePaths.find(p => fs.existsSync(path.join(p, 'index.html'))) ?? candidatePaths[0]!;
     // Gzip the dashboard bundle (1+ MB uncompressed). Mounted HERE — after
     // every API/proxy router and the error handler — so it only wraps the
     // static-file / SPA-fallback responses below it. The /v1 and /api handlers
