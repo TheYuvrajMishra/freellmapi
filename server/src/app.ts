@@ -51,7 +51,7 @@ const DEFAULT_DASHBOARD_ORIGINS = [
 // must run before first paint. Kept as a literal so the CSP header stays a
 // constant string; csp-inline-bootstrap.test.ts recomputes it from the real
 // index.html (source and build) and fails if the two ever drift apart.
-export const INLINE_BOOTSTRAP_SHA = "'sha256-4Mz/yZAENQGlTAAeE1WqXruXCripvlvl0s+Q9S1VS4A='";
+export const INLINE_BOOTSTRAP_SHA = "'sha256-NhQ9t1luOLg/gJxVj+cgjX5vxl4o7owwcLBpVHf+wD8='";
 
 // A build asset is safe to cache forever+immutable when its URL is
 // content-addressed. Vite parks every hashed chunk (JS, CSS, fonts, images)
@@ -326,6 +326,10 @@ export function createApp(config?: Config) {
       // links must revalidate so a redeploy propagates new asset URLs.
       res.sendFile(path.join(clientDist, 'index.html'), {
         headers: { 'Cache-Control': 'no-cache' },
+      }, (err) => {
+        if (err && !res.headersSent) {
+          res.status(404).send('Client dist index.html not found. Ensure the client static files are built or deployed.');
+        }
       });
     });
   }
