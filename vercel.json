@@ -1,14 +1,24 @@
 {
+  "version": 2,
   "buildCommand": "npm run build",
   "outputDirectory": "client/dist",
-  "rewrites": [
+  "functions": {
+    "api/index.ts": {
+      "memory": 1024,
+      "maxDuration": 10
+    }
+  },
+  "routes": [
     {
-      "source": "/(api|v1|v1beta)(.*)",
-      "destination": "/api/index"
+      "src": "/(api|v1|v1beta)(.*)",
+      "dest": "/api/index.ts"
     },
     {
-      "source": "/((?!api|v1|v1beta).*)",
-      "destination": "/index.html"
+      "handle": "filesystem"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
   ]
 }
